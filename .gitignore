@@ -1,0 +1,23 @@
+# Ambiente Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.so
+.env
+.env.local
+
+# Planilhas enviadas por upload (pasta data)
+data/*.xls
+data/*.xlsx
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
