@@ -70,6 +70,20 @@ Quando terminar, o link será: **https://dashboardge.vercel.app**
 
 ---
 
+## Se aparecer 404 (DEPLOYMENT_NOT_FOUND) no dashboardge.vercel.app
+
+O projeto existe, mas **não há um deploy concluído**. Faça o seguinte:
+
+1. Acesse **https://vercel.com** e entre na sua conta.
+2. Clique no projeto **dashboardge** (ou no que está ligado ao repositório RCELL).
+3. Abra a aba **Deployments**.
+4. Veja o **último deployment**:
+   - Se estiver **Ready** (verde): o site deveria funcionar; tente abrir de novo o link ou **Redeploy**.
+   - Se estiver **Error** ou **Canceled**: clique em **Redeploy** nesse deployment ou em **Deploy** (canto superior direito) para fazer um novo.
+5. Depois que um deployment ficar **Ready**, abra de novo **https://dashboardge.vercel.app** (pode levar 1 minuto).
+
+---
+
 ## Resumo
 
 | Ordem | O quê |
