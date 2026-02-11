@@ -44,7 +44,8 @@ git push -u origin main
 ```powershell
 git pull origin main --allow-unrelated-histories
 ```
-Se pedir mensagem de merge, salve e feche o editor. Depois rode de novo: `git push -u origin main`.
+Se pedir mensagem de merge, salve e feche o editor. Depois rode de novo: `git push -u origin main`.  
+**Se aparecer conflito em um arquivo:** abra o arquivo, apague as linhas com `<<<<<<<`, `=======`, `>>>>>>>` e deixe só o texto que quiser manter. Depois: `git add .` → `git commit -m "Resolve conflito"` → `git push -u origin main`.
 
 ### 3. Quando pedir login do GitHub
 
