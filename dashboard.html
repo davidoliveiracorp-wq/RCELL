@@ -1,399 +1,650 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard BI - RCELL</title>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <style>
-    * { box-sizing: border-box; }
-    :root {
-      --bg: #0e1117;
-      --card: #262730;
-      --accent: #1e3a5f;
-      --text: #fafafa;
-      --border: #3a3d48;
-    }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-    }
-    h1 { margin: 0 0 8px; font-size: 1.6rem; }
-    .sub { color: #888; margin-bottom: 24px; font-size: 0.95rem; }
-    .upload-area {
-      background: var(--card);
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    @media (max-width: 700px) { .upload-area { grid-template-columns: 1fr; } }
-    .upload-box {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      background: var(--bg);
-    }
-    .upload-box label { font-weight: 600; display: block; margin-bottom: 8px; }
-    .upload-box input[type=file] { width: 100%; font-size: 0.9rem; }
-    .upload-box .hint { font-size: 0.8rem; color: #888; margin-top: 6px; }
-    .btn {
-      background: var(--accent);
-      color: var(--text);
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 12px;
-    }
-    .btn:hover { filter: brightness(1.15); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .kpis {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .kpi {
-      background: var(--card);
-      border-radius: 10px;
-      padding: 16px;
-      border: 1px solid var(--border);
-    }
-    .kpi .valor { font-size: 1.5rem; font-weight: 700; }
-    .kpi .label { font-size: 0.8rem; color: #aaa; line-height: 1.3; }
-    .info-box {
-      background: var(--card);
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 20px;
-      border: 1px solid var(--border);
-      font-size: 0.9rem;
-    }
-    .info-box h3 { margin: 0 0 10px; font-size: 0.95rem; color: #aaa; }
-    .info-box .cols { display: flex; flex-wrap: wrap; gap: 8px; }
-    .info-box .col-tag { background: var(--accent); padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
-    .section-title { font-size: 1.1rem; margin: 24px 0 12px; color: #ccc; }
-    .charts {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-    @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
-    .chart-card {
-      background: var(--card);
-      border-radius: 12px;
-      padding: 20px;
-      border: 1px solid var(--border);
-    }
-    .chart-card h3 { margin: 0 0 16px; font-size: 1rem; }
-    .chart-container { position: relative; height: 280px; }
-    .table-wrap {
-      background: var(--card);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      margin-bottom: 20px;
-    }
-    .table-wrap h3 { margin: 0; padding: 16px 20px; font-size: 1rem; border-bottom: 1px solid var(--border); }
-    .table-scroll { overflow-x: auto; max-height: 420px; overflow-y: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { background: var(--accent); position: sticky; top: 0; }
-    tr:hover { background: rgba(255,255,255,0.04); }
-    .msg { padding: 24px; text-align: center; color: #888; }
-    .err { color: #e66; }
-    .ok { color: #6e6; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indicador Contas a Pagar – RCELL</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── TEMAS ───────────────────────────────────────────────────────────────── */
+:root, [data-theme="dark"] {
+  --bg:#0e1117; --surface:#161923; --card:#1c1f2e; --card2:#20243a;
+  --border:#2a2d42; --accent:#2563eb; --accent2:#1d4ed8;
+  --green:#22c55e; --red:#ef4444; --yellow:#f59e0b; --purple:#a855f7;
+  --text:#e2e8f0; --muted:#64748b; --muted2:#94a3b8;
+  --shadow:0 4px 24px #0006;
+  --chart-grid:#1e2133; --chart-tick:#64748b;
+  --input-bg:#0e1117;
+}
+[data-theme="light"] {
+  --bg:#f1f5f9; --surface:#ffffff; --card:#ffffff; --card2:#f8fafc;
+  --border:#e2e8f0; --accent:#2563eb; --accent2:#1d4ed8;
+  --green:#16a34a; --red:#dc2626; --yellow:#d97706; --purple:#9333ea;
+  --text:#1e293b; --muted:#94a3b8; --muted2:#64748b;
+  --shadow:0 4px 24px #0001;
+  --chart-grid:#e2e8f0; --chart-tick:#94a3b8;
+  --input-bg:#f8fafc;
+}
+
+body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; transition:background .2s,color .2s; }
+
+/* ── LOGIN ───────────────────────────────────────────────────────────────── */
+#login-screen {
+  position:fixed; inset:0; background:#f1f5f9; z-index:999;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.login-card {
+  background:#ffffff; border:1px solid #e2e8f0; border-radius:20px;
+  padding:40px 44px; width:100%; max-width:400px; box-shadow:0 4px 24px #0001;
+  display:flex; flex-direction:column; align-items:center; gap:0;
+}
+.login-logo { margin-bottom:28px; }
+.login-form  { width:100%; display:flex; flex-direction:column; gap:14px; }
+.lfield { display:flex; flex-direction:column; gap:5px; }
+.lfield label { font-size:0.73rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.05em; }
+.lfield input {
+  background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;
+  color:#1e293b; font-size:0.9rem; padding:10px 14px; outline:none; transition:.12s; width:100%;
+}
+.lfield input:focus { border-color:#2563eb; }
+.login-err { font-size:0.8rem; color:#dc2626; text-align:center; min-height:18px; }
+.login-btn {
+  background:#2563eb; color:#fff; border:none; border-radius:10px;
+  padding:11px; font-size:0.9rem; font-weight:700; cursor:pointer; transition:.15s; width:100%; margin-top:4px;
+}
+.login-btn:hover { background:#1d4ed8; }
+
+/* ── TOPBAR ───────────────────────────────────────────────────────────────── */
+.topbar {
+  background:var(--surface); border-bottom:1px solid var(--border);
+  padding:12px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+}
+.topbar-left { display:flex; align-items:center; gap:16px; }
+.topbar-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.topbar h1 { font-size:1.05rem; font-weight:700; }
+.topbar span { font-size:0.73rem; color:var(--muted2); margin-top:2px; display:block; }
+
+.user-badge {
+  display:flex; align-items:center; gap:7px; background:var(--card2);
+  border:1px solid var(--border); border-radius:99px; padding:5px 12px 5px 8px; font-size:0.78rem;
+}
+.user-dot { width:8px; height:8px; border-radius:50%; }
+.dot-admin { background:var(--green); }
+.dot-read  { background:var(--yellow); }
+.role-tag  { font-size:0.68rem; color:var(--muted2); }
+
+/* ── BUTTONS ───────────────────────────────────────────────────────────────── */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border:none; font-size:0.82rem; font-weight:600; cursor:pointer; transition:.15s; white-space:nowrap; }
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:var(--accent2); }
+.btn-outline { background:transparent; color:var(--muted2); border:1px solid var(--border); }
+.btn-outline:hover { background:var(--card2); color:var(--text); }
+.btn-sm { padding:5px 12px; font-size:0.77rem; border-radius:6px; }
+.btn-icon { background:transparent; border:none; color:var(--muted2); cursor:pointer; padding:4px 6px; border-radius:4px; font-size:0.95rem; transition:.12s; line-height:1; }
+.btn-icon:hover { color:var(--text); background:var(--card2); }
+.btn-icon:disabled { opacity:.25; cursor:default; }
+
+/* ── THEME TOGGLE ──────────────────────────────────────────────────────────── */
+.theme-btn {
+  background:var(--card2); border:1px solid var(--border); border-radius:99px;
+  padding:5px 12px; cursor:pointer; font-size:0.82rem; color:var(--text);
+  display:flex; align-items:center; gap:6px; transition:.15s;
+}
+.theme-btn:hover { border-color:var(--accent); }
+
+/* ── MAIN ──────────────────────────────────────────────────────────────────── */
+.main { padding:20px 24px 60px; }
+
+/* ── KPIS ──────────────────────────────────────────────────────────────────── */
+.kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:20px; }
+@media(max-width:1100px){ .kpis{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:650px) { .kpis{grid-template-columns:repeat(2,1fr);} }
+.kpi { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; box-shadow:var(--shadow); }
+.kpi-lbl { font-size:0.69rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:7px; }
+.kpi-val { font-size:1.35rem; font-weight:700; line-height:1.1; }
+.kpi-sub { font-size:0.72rem; color:var(--muted2); margin-top:5px; }
+.c-blue{color:#3b82f6;} .c-green{color:var(--green);} .c-yellow{color:var(--yellow);} .c-purple{color:#a855f7;}
+
+/* ── TOOLBAR ──────────────────────────────────────────────────────────────── */
+.toolbar { display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.tabs { display:flex; gap:4px; }
+.tab { padding:7px 15px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--muted2); cursor:pointer; font-size:0.81rem; font-weight:600; transition:.12s; }
+.tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.search-box { display:flex; align-items:center; gap:6px; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:6px 12px; flex:1; min-width:150px; max-width:270px; }
+.search-box input { background:none; border:none; color:var(--text); font-size:0.83rem; outline:none; width:100%; }
+.search-box input::placeholder { color:var(--muted); }
+.sel { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:7px 10px; color:var(--text); font-size:0.81rem; cursor:pointer; outline:none; }
+.sel option { background:var(--card2); }
+.rc { margin-left:auto; font-size:.77rem; color:var(--muted); align-self:center; white-space:nowrap; }
+
+/* ── CHARTS ──────────────────────────────────────────────────────────────── */
+.charts-row { display:grid; grid-template-columns:300px 1fr; gap:14px; margin-bottom:16px; }
+@media(max-width:880px){ .charts-row{grid-template-columns:1fr;} }
+.chart-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; box-shadow:var(--shadow); }
+.chart-title { font-size:0.71rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:14px; }
+.pie-wrap { position:relative; height:210px; }
+.bar-wrap { position:relative; height:230px; }
+.legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:0.73rem; color:var(--muted2); }
+.legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ── TABLE ──────────────────────────────────────────────────────────────── */
+.tbl-wrap { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+.tbl-head { padding:13px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.tbl-head-lbl { font-size:0.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.tbl-scroll { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+thead th { padding:9px 13px; border-bottom:1px solid var(--border); color:var(--muted); font-size:0.69rem; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; text-align:left; background:var(--surface); }
+tbody td { padding:9px 13px; border-bottom:1px solid var(--card2); vertical-align:middle; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover td { background:var(--card2); }
+.num { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.c-eco { color:var(--green); font-weight:600; }
+.c-zero { color:var(--muted); }
+.small { font-size:0.72rem; color:var(--muted2); }
+.origin-tag { font-size:0.67rem; color:var(--muted); border:1px solid var(--border); border-radius:4px; padding:1px 6px; background:var(--surface); white-space:nowrap; }
+
+/* ── BADGE ──────────────────────────────────────────────────────────────── */
+.badge { display:inline-block; padding:2px 9px; border-radius:99px; font-size:0.68rem; font-weight:600; white-space:nowrap; }
+.b-avaliar      { background:#1e3a5f44; color:#3b82f6;       border:1px solid #1e3a5f; }
+.b-manter       { background:#14401f44; color:var(--green);  border:1px solid #14401f; }
+.b-encerrar     { background:#3f141444; color:var(--red);    border:1px solid #7f1d1d; }
+.b-substituir   { background:#3b250044; color:var(--yellow); border:1px solid #78350f; }
+.b-redirecionar { background:#2e1b4e44; color:#a855f7;       border:1px solid #4c1d95; }
+
+/* ── MODAL ──────────────────────────────────────────────────────────────── */
+.overlay { position:fixed; inset:0; background:#000b; z-index:100; display:none; align-items:center; justify-content:center; padding:16px; }
+.overlay.open { display:flex; }
+.modal { background:var(--card); border:1px solid var(--border); border-radius:16px; width:100%; max-width:680px; max-height:92vh; display:flex; flex-direction:column; box-shadow:var(--shadow); }
+.modal-head { padding:18px 22px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.modal-head h2 { font-size:1rem; font-weight:700; }
+.modal-body { overflow-y:auto; padding:18px 22px; flex:1; }
+.modal-foot { padding:14px 22px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:560px){ .form-grid{grid-template-columns:1fr;} }
+.f-full { grid-column:1/-1; }
+.field { display:flex; flex-direction:column; gap:4px; }
+.field label { font-size:0.71rem; font-weight:700; color:var(--muted2); text-transform:uppercase; letter-spacing:.04em; }
+.field input,.field select,.field textarea {
+  background:var(--input-bg); border:1px solid var(--border); border-radius:8px;
+  color:var(--text); font-size:0.84rem; padding:7px 11px; outline:none; transition:.12s; font-family:inherit;
+}
+.field input:focus,.field select:focus,.field textarea:focus { border-color:var(--accent); }
+.field textarea { resize:vertical; min-height:65px; }
+.field select option { background:var(--card2); }
+.field-hint { font-size:0.69rem; color:var(--muted); }
+.sec-lbl { font-size:0.67rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; grid-column:1/-1; margin-top:6px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+
+/* ── CONFIRM ──────────────────────────────────────────────────────────────── */
+.confirm-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:26px 30px; max-width:380px; text-align:center; box-shadow:var(--shadow); }
+.confirm-box p { color:var(--muted2); font-size:0.88rem; margin:8px 0 20px; }
+.confirm-btns { display:flex; gap:10px; justify-content:center; }
+.btn-del { background:#3f141444; color:var(--red); border:1px solid #7f1d1d; }
+.btn-del:hover { background:#7f1d1d; color:#fff; }
+
+/* ── TOAST ──────────────────────────────────────────────────────────────── */
+.toast { position:fixed; bottom:22px; right:22px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:11px 16px; font-size:0.82rem; z-index:9999; transform:translateY(80px); opacity:0; transition:.3s; pointer-events:none; box-shadow:var(--shadow); }
+.toast.show { transform:translateY(0); opacity:1; }
+
+.empty-state { text-align:center; padding:44px; color:var(--muted); font-size:0.9rem; }
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+</style>
 </head>
 <body>
-  <h1>Dashboard BI – União de planilhas</h1>
-  <p class="sub">Envie as duas planilhas (A vencer e Pagos) para unir os dados e ver o resumo. Tudo roda no seu navegador, sem servidor.</p>
 
-  <div class="upload-area">
-    <div class="upload-box">
-      <label for="f1">Planilha A vencer</label>
-      <input type="file" id="f1" accept=".xls,.xlsx">
-      <p class="hint">.xls ou .xlsx</p>
+<!-- ── LOGIN SCREEN ──────────────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="110" height="42" viewBox="0 0 110 42" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="42" height="42" fill="#CC1F1F" rx="4"/>
+        <text x="21" y="30" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="26" fill="white">R</text>
+        <rect x="42" y="0" width="68" height="42" fill="#111111" rx="4"/>
+        <text x="76" y="30" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="23" fill="white">CELL</text>
+      </svg>
     </div>
-    <div class="upload-box">
-      <label for="f2">Planilha Pagos</label>
-      <input type="file" id="f2" accept=".xls,.xlsx">
-      <p class="hint">.xls ou .xlsx</p>
+    <div class="login-form">
+      <div class="lfield">
+        <label>Usuário</label>
+        <input type="text" id="li-user" placeholder="" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="lfield">
+        <label>Senha</label>
+        <input type="password" id="li-pass" placeholder="••••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="login-err" id="li-err"></div>
+      <button class="login-btn" onclick="doLogin()">Entrar</button>
     </div>
   </div>
-  <button class="btn" id="btnProcessar" disabled>Unir dados e atualizar dashboard</button>
+</div>
 
-  <div id="content" style="display: none;">
-    <p class="section-title">Resumo numérico</p>
-    <div class="kpis" id="kpis"></div>
-    <div class="info-box" id="infoColunas" style="display: none;">
-      <h3>Colunas encontradas nas planilhas</h3>
-      <div class="cols" id="listaColunas"></div>
-      <p id="colunaValorInfo" style="margin: 10px 0 0; font-size: 0.85rem; color: #888;"></p>
+<!-- ── APP ──────────────────────────────────────────────────────────────── -->
+<div id="app" style="display:none">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <svg width="90" height="34" viewBox="0 0 90 34" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <rect x="0" y="0" width="34" height="34" fill="#CC1F1F"/>
+      <text x="17" y="25" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="22" fill="white">R</text>
+      <rect x="34" y="0" width="56" height="34" fill="#111111"/>
+      <text x="62" y="25" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="19" fill="white">CELL</text>
+    </svg>
+    <div>
+      <h1>Indicador Contas a Pagar</h1>
+      <span>Exerc. 26 · Redução de Custos · Painel de Controle</span>
     </div>
-    <p class="section-title">Gráficos</p>
-    <div class="charts">
-      <div class="chart-card">
-        <h3>Quantidade de linhas por origem (A vencer vs Pagos)</h3>
-        <div class="chart-container"><canvas id="chartOrigem"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3 id="tituloChartValor">Valor total em R$ por origem</h3>
-        <div class="chart-container"><canvas id="chartValor"></canvas></div>
-      </div>
-    </div>
-    <div class="chart-card" id="cardTopCategoria" style="display: none;">
-      <h3 id="tituloTopCategoria">Maiores valores por categoria</h3>
-      <div class="chart-container"><canvas id="chartTopCategoria"></canvas></div>
-    </div>
-    <p class="section-title">Tabela com todos os dados unificados</p>
-    <div class="table-wrap">
-      <h3>Dados unificados (todas as colunas das duas planilhas)</h3>
-      <div class="table-scroll">
-        <table id="tabela">
-          <thead id="thead"></thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-    </div>
-    <button class="btn" id="btnExportar">Baixar dados unificados (CSV)</button>
   </div>
-  <div id="placeholder" class="msg">Selecione as duas planilhas e clique em &quot;Unir dados e atualizar dashboard&quot;.</div>
+  <div class="topbar-right">
+    <div class="user-badge">
+      <div class="user-dot" id="user-dot"></div>
+      <span id="user-name"></span>
+      <span class="role-tag" id="user-role-tag"></span>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙 Escuro</button>
+    <button class="btn btn-outline btn-sm" onclick="exportCSV()">⬇ CSV</button>
+    <button class="btn btn-primary btn-sm admin-only" onclick="openModal()">+ Novo</button>
+    <button class="btn btn-outline btn-sm" onclick="doLogout()" style="color:var(--red)">Sair</button>
+  </div>
+</div>
 
-  <script>
-    let mergedData = [];
-    let colValor = null;
-    let colTexto = null;
-    let chartOrigem = null;
-    let chartValor = null;
-    let chartTopCat = null;
+<!-- MAIN -->
+<div class="main">
+  <div class="kpis" id="kpis"></div>
 
-    function readFile(file) {
-      return new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = (e) => resolve(e.target.result);
-        r.onerror = () => reject(new Error('Erro ao ler arquivo'));
-        const name = (file.name || '').toLowerCase();
-        if (name.endsWith('.xls')) {
-          r.readAsBinaryString(file);
-        } else {
-          r.readAsArrayBuffer(file);
-        }
-      });
-    }
+  <div class="toolbar">
+    <div class="tabs">
+      <div class="tab active" data-tab="all" onclick="setTab(this)">Todos</div>
+      <div class="tab" data-tab="CP"  onclick="setTab(this)">Contas a Pagar</div>
+      <div class="tab" data-tab="MKT" onclick="setTab(this)">Marketing</div>
+    </div>
+    <div class="search-box">
+      <span style="color:var(--muted);font-size:.85rem">🔍</span>
+      <input type="text" id="search" placeholder="Buscar…" oninput="render()">
+    </div>
+    <select class="sel" id="filterPos" onchange="render()">
+      <option value="">Todas as posições</option>
+      <option>Avaliar</option><option>Manter</option><option>Encerrar</option>
+      <option>Substituir</option><option>Redirecionar</option>
+    </select>
+    <span class="rc" id="rc"></span>
+  </div>
 
-    function readWorkbook(data, fileName) {
-      const name = (fileName || '').toLowerCase();
-      if (name.endsWith('.xls')) {
-        return XLSX.read(data, { type: 'binary', cellDates: true });
-      }
-      return XLSX.read(data, { type: 'array', cellDates: true });
-    }
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Posição dos Contratos</div>
+      <div class="pie-wrap"><canvas id="pieChart"></canvas></div>
+      <div class="legend" id="pieLegend"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Custo Anual Atual vs Proposto – Top 12 (R$)</div>
+      <div class="bar-wrap"><canvas id="barChart"></canvas></div>
+    </div>
+  </div>
 
-    function sheetToJson(workbook) {
-      if (!workbook.SheetNames || workbook.SheetNames.length === 0) throw new Error('Planilha sem abas');
-      const sh = workbook.Sheets[workbook.SheetNames[0]];
-      if (!sh) throw new Error('Primeira aba vazia ou inválida');
-      return XLSX.utils.sheet_to_json(sh, { defval: '', raw: false });
-    }
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <span class="tbl-head-lbl">Fornecedores</span>
+      <button class="btn btn-primary btn-sm admin-only" onclick="openModal()">+ Adicionar linha</button>
+    </div>
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Área</th><th>Fornecedor</th><th>Descrição</th>
+            <th class="num">Mensal Atual</th><th class="num">Anual Atual</th>
+            <th class="num">Anual Proposto</th><th class="num">Economia</th>
+            <th class="num">Redução</th><th>Vigência</th><th>Carência</th>
+            <th>Posição</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div><!-- /app -->
 
-    function detectarColunaValor(arr) {
-      if (!arr.length) return null;
-      const keys = Object.keys(arr[0]).filter(k => k !== 'Origem');
-      for (const k of keys) {
-        const vals = arr.map(r => r[k]).filter(v => v !== '' && v != null);
-        if (vals.length < 2) continue;
-        const nums = vals.map(v => {
-          const s = String(v).replace(/\./g, '').replace(',', '.');
-          return parseFloat(s);
-        }).filter(n => !isNaN(n) && Math.abs(n) > 0.01);
-        if (nums.length / vals.length > 0.5) return k;
-      }
-      return null;
-    }
+<!-- MODAL FORM -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modal-title">Novo Fornecedor</h2>
+      <button class="btn-icon" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="sec-lbl">Identificação</div>
+        <div class="field">
+          <label>Área *</label>
+          <select id="f-area"><option value="CP">Contas a Pagar</option><option value="MKT">Marketing</option></select>
+        </div>
+        <div class="field">
+          <label>Posição *</label>
+          <select id="f-pos"><option>Avaliar</option><option>Manter</option><option>Encerrar</option><option>Substituir</option><option>Redirecionar</option></select>
+        </div>
+        <div class="field f-full"><label>Fornecedor *</label><input type="text" id="f-forn" placeholder="Nome completo"></div>
+        <div class="field f-full"><label>Descrição *</label><input type="text" id="f-desc" placeholder="Tipo de serviço / contrato"></div>
+        <div class="sec-lbl">Valores Atuais</div>
+        <div class="field">
+          <label>Mensal Atual (R$)</label><input type="number" id="f-mensal" step="0.01" min="0" placeholder="0,00">
+        </div>
+        <div class="field">
+          <label>Anual Atual (R$)</label><input type="number" id="f-ano" step="0.01" min="0" placeholder="0,00">
+          <span class="field-hint">Se diferente de Mensal × 12</span>
+        </div>
+        <div class="sec-lbl">Proposta de Redução</div>
+        <div class="field">
+          <label>Mensal Proposto (R$)</label><input type="number" id="f-mensalprop" step="0.01" min="0" placeholder="0,00">
+        </div>
+        <div class="field">
+          <label>Anual Proposto (R$)</label><input type="number" id="f-anoprop" step="0.01" min="0" placeholder="0,00">
+          <span class="field-hint">Deixe em branco para Mensal × 12</span>
+        </div>
+        <div class="sec-lbl">Contrato</div>
+        <div class="field"><label>Vigência / Prazo</label><input type="text" id="f-vig" placeholder="Ex.: Mensalmente / 120 meses"></div>
+        <div class="field"><label>Carência / Distrato</label><input type="text" id="f-car" placeholder="Ex.: 30 dias"></div>
+        <div class="sec-lbl">Análise</div>
+        <div class="field f-full"><label>Argumentos para MANTER</label><textarea id="f-argm" placeholder="Justificativas para manutenção…"></textarea></div>
+        <div class="field f-full"><label>Argumentos para NÃO MANTER</label><textarea id="f-argn" placeholder="Justificativas para encerramento…"></textarea></div>
+        <div class="field f-full"><label>Observações</label><textarea id="f-obs" placeholder="Notas, datas, referências…" style="min-height:48px"></textarea></div>
+      </div>
+      <input type="hidden" id="f-id">
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveRow()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
 
-    function detectarColunaTexto(arr) {
-      if (!arr.length) return null;
-      const keys = Object.keys(arr[0]).filter(k => k !== 'Origem' && k !== colValor);
-      for (const k of keys) {
-        const vals = arr.map(r => String(r[k] || '').trim()).filter(v => v.length > 0);
-        if (vals.length / arr.length > 0.3) return k;
-      }
-      return null;
-    }
+<!-- CONFIRM DELETE -->
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div style="font-size:1.8rem">🗑</div>
+    <h3 style="margin-top:8px">Excluir fornecedor?</h3>
+    <p>Remover <strong id="confirmName"></strong>? Esta ação não pode ser desfeita.</p>
+    <div class="confirm-btns">
+      <button class="btn btn-outline" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn btn-del" onclick="confirmDelete()">Excluir</button>
+    </div>
+  </div>
+</div>
 
-    function atualizarBotao() {
-      const f1 = document.getElementById('f1').files[0];
-      const f2 = document.getElementById('f2').files[0];
-      document.getElementById('btnProcessar').disabled = !(f1 && f2);
-    }
-    document.getElementById('f1').addEventListener('change', atualizarBotao);
-    document.getElementById('f2').addEventListener('change', atualizarBotao);
+<div class="toast" id="toast"></div>
 
-    document.getElementById('btnProcessar').addEventListener('click', async () => {
-      const f1 = document.getElementById('f1').files[0];
-      const f2 = document.getElementById('f2').files[0];
-      if (!f1 || !f2) return;
+<script>
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+const USERS = {
+  admin: { hash:"f0146db3c3b618e37901f27827ded38eb5d423d797b923638fb822d95c2857f4", role:"admin" },
+  read:  { hash:"03f6f8e4bfc7925981b19250a1f111207f339c56fc05ab0009f1d152193d19f9", role:"read"  }
+};
+let SESSION = null;
 
-      const btn = document.getElementById('btnProcessar');
-      btn.disabled = true;
-      btn.textContent = 'Processando...';
+async function sha256(msg){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
 
-      try {
-        const buf1 = await readFile(f1);
-        const buf2 = await readFile(f2);
-        const wb1 = readWorkbook(buf1, f1.name);
-        const wb2 = readWorkbook(buf2, f2.name);
-        const arr1 = sheetToJson(wb1).map(r => ({ ...r, Origem: 'A vencer' }));
-        const arr2 = sheetToJson(wb2).map(r => ({ ...r, Origem: 'Pagos' }));
-        mergedData = [...arr1, ...arr2];
-        colValor = detectarColunaValor(mergedData);
-        colTexto = detectarColunaTexto(mergedData);
-        render();
-      } catch (e) {
-        document.getElementById('content').style.display = 'none';
-        document.getElementById('placeholder').style.display = 'block';
-        document.getElementById('placeholder').innerHTML = '<span class="err">Erro: ' + (e.message || String(e)) + '</span>';
-        console.error(e);
-      }
-      btn.disabled = false;
-      btn.textContent = 'Unir dados e atualizar dashboard';
-    });
+async function doLogin(){
+  const u = document.getElementById("li-user").value.trim().toLowerCase();
+  const p = document.getElementById("li-pass").value;
+  const err = document.getElementById("li-err");
+  err.textContent = "";
+  if(!USERS[u]){ err.textContent="Usuário ou senha incorretos."; return; }
+  const h = await sha256(p);
+  if(h !== USERS[u].hash){ err.textContent="Usuário ou senha incorretos."; return; }
+  SESSION = { username: u, role: USERS[u].role };
+  sessionStorage.setItem("rcell_session", JSON.stringify(SESSION));
+  startApp();
+}
 
-    function formatNum(x) {
-      if (typeof x !== 'number' || isNaN(x)) return '0,00';
-      return x.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
+function doLogout(){
+  sessionStorage.removeItem("rcell_session");
+  SESSION = null;
+  document.getElementById("app").style.display = "none";
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("li-pass").value = "";
+  document.getElementById("li-err").textContent = "";
+}
 
-    function render() {
-      document.getElementById('placeholder').style.display = 'none';
-      document.getElementById('content').style.display = 'block';
+function startApp(){
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  // Role UI
+  const isAdmin = SESSION.role === "admin";
+  document.querySelectorAll(".admin-only").forEach(el => {
+    el.style.display = isAdmin ? "" : "none";
+  });
+  document.getElementById("user-name").textContent = SESSION.username;
+  document.getElementById("user-dot").className = "user-dot " + (isAdmin ? "dot-admin" : "dot-read");
+  document.getElementById("user-role-tag").textContent = isAdmin ? "Admin" : "Leitura";
+  load(); render();
+}
 
-      const cols = mergedData.length ? Object.keys(mergedData[0]) : [];
-      const aVencer = mergedData.filter(r => r.Origem === 'A vencer');
-      const pagos = mergedData.filter(r => r.Origem === 'Pagos');
-      const parseVal = (r) => {
-        const v = r[colValor];
-        const n = typeof v === 'number' ? v : parseFloat(String(v || '').replace(/\./g, '').replace(',', '.'));
-        return isNaN(n) ? 0 : n;
-      };
-      let totalValor = 0, somaAvencer = 0, somaPagos = 0;
-      if (colValor) {
-        totalValor = mergedData.reduce((s, r) => s + parseVal(r), 0);
-        somaAvencer = aVencer.reduce((s, r) => s + parseVal(r), 0);
-        somaPagos = pagos.reduce((s, r) => s + parseVal(r), 0);
-      }
+// ── TEMA ──────────────────────────────────────────────────────────────────────
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme", t);
+  const btn = document.getElementById("theme-btn");
+  if(btn) btn.textContent = t==="dark" ? "☀ Claro" : "🌙 Escuro";
+  localStorage.setItem("rcell_theme", t);
+  if(pieChart||barChart) setTimeout(render,50);
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute("data-theme")||"dark";
+  applyTheme(cur==="dark" ? "light" : "dark");
+}
+let pieChart=null, barChart=null;
+(function(){ applyTheme(localStorage.getItem("rcell_theme")||"dark"); })();
 
-      const kpiHtml = [
-        '<div class="kpi"><div class="valor">' + mergedData.length + '</div><div class="label">Total de linhas (ambas as planilhas)</div></div>',
-        '<div class="kpi"><div class="valor">' + aVencer.length + '</div><div class="label">Linhas da planilha A vencer</div></div>',
-        '<div class="kpi"><div class="valor">' + pagos.length + '</div><div class="label">Linhas da planilha Pagos</div></div>'
-      ];
-      if (colValor) {
-        kpiHtml.push('<div class="kpi"><div class="valor">R$ ' + formatNum(totalValor) + '</div><div class="label">Soma total (coluna &quot;' + colValor + '&quot;)</div></div>');
-        kpiHtml.push('<div class="kpi"><div class="valor">R$ ' + formatNum(somaAvencer) + '</div><div class="label">Soma A vencer (coluna &quot;' + colValor + '&quot;)</div></div>');
-        kpiHtml.push('<div class="kpi"><div class="valor">R$ ' + formatNum(somaPagos) + '</div><div class="label">Soma Pagos (coluna &quot;' + colValor + '&quot;)</div></div>');
-      }
-      document.getElementById('kpis').innerHTML = kpiHtml.join('');
+// ── DADOS ORIGINAIS (exatos da planilha Exerc.26) ────────────────────────────
+const SEED = [
+  // ── CONTAS A PAGAR ──────────────────────────────────────────────────────────
+  { id:1,  area:"CP",  fornecedor:"BANCO ORIGINAL",                       descricao:"CESSÃO A FORNECEDOR",             mensalAtual:20000000,   anoAtual:60000000,   mensalProp:null,    anoProp:59850000,   vigencia:"120",                                          carencia:"",                                      posicao:"Avaliar",      argManter:"",                                                                                                                                                                                                            argNao:"Baixo uso potencial; formato em desuso; redundante com RCELL ONE, e-mail e WhatsApp; difícil justificar ROI, já existe a revista no site e os acessos diaários sao de xxx",  obs:"" },
+  { id:2,  area:"CP",  fornecedor:"BANCO ABC",                            descricao:"CESSÃO A FORNECEDOR",             mensalAtual:20000000,   anoAtual:60000000,   mensalProp:null,    anoProp:59880000,   vigencia:"120",                                          carencia:"",                                      posicao:"Avaliar",      argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:3,  area:"CP",  fornecedor:"BANCO BTG",                            descricao:"CESSÃO A FORNECEDOR",             mensalAtual:35000000,   anoAtual:105000000,  mensalProp:null,    anoProp:104790000,  vigencia:"120",                                          carencia:"",                                      posicao:"Avaliar",      argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:4,  area:"CP",  fornecedor:"BANCO DO BRASIL",                      descricao:"CESSÃO A FORNECEDOR",             mensalAtual:15000000,   anoAtual:45000000,   mensalProp:null,    anoProp:45000000,   vigencia:"120",                                          carencia:"",                                      posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:5,  area:"CP",  fornecedor:"BANCO FIBRA",                          descricao:"CESSÃO A FORNECEDOR",             mensalAtual:7000000,    anoAtual:14000000,   mensalProp:null,    anoProp:13965000,   vigencia:"180",                                          carencia:"",                                      posicao:"Avaliar",      argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:6,  area:"CP",  fornecedor:"BANCO INDUSTRIAL",                     descricao:"CESSÃO A FORNECEDOR",             mensalAtual:15000000,   anoAtual:45000000,   mensalProp:null,    anoProp:44910000,   vigencia:"120",                                          carencia:"",                                      posicao:"Avaliar",      argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:7,  area:"CP",  fornecedor:"BANCO ITAÚ",                           descricao:"CESSÃO A FORNECEDOR",             mensalAtual:10000000,   anoAtual:30000000,   mensalProp:null,    anoProp:29910000,   vigencia:"120",                                          carencia:"",                                      posicao:"Avaliar",      argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:8,  area:"CP",  fornecedor:"BANCO SANTANDER",                      descricao:"CESSÃO A FORNECEDOR",             mensalAtual:70000000,   anoAtual:210000000,  mensalProp:null,    anoProp:209685000,  vigencia:"120",                                          carencia:"",                                      posicao:"Avaliar",      argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:9,  area:"CP",  fornecedor:"DIGITRON",                             descricao:"JUROS E MULTA",                   mensalAtual:177987.66,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"NOTAS PAGAS EM ATRASOS  MONTANTE DE R$ 2.875.406,40 / Março 2026",  carencia:"",             posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:10, area:"CP",  fornecedor:"DIGITRON",                             descricao:"JUROS E MULTA",                   mensalAtual:185716.05,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"NOTAS PAGAS EM ATRASOS  MONTANTE DE R$ 2.462.107,80 / Março 2026",  carencia:"",             posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:11, area:"CP",  fornecedor:"DIGITRON",                             descricao:"JUROS E MULTA",                   mensalAtual:398063.47,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"NOTAS PAGAS EM ATRASOS  MONTANTE DE R$ 6.095.918,40 / Março 2026",  carencia:"",             posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:12, area:"CP",  fornecedor:"DIGITRON",                             descricao:"JUROS E MULTA",                   mensalAtual:237200.97,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"NOTAS PAGAS EM ATRASOS  MONTANTE DE R$ 4.226.549,58 / Fevereiro 2026", carencia:"",           posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:13, area:"CP",  fornecedor:"DIGITRON",                             descricao:"JUROS E MULTA",                   mensalAtual:416429.35,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"NOTAS PAGAS EM ATRASOS  MONTANTE DE R$ 7.118.450,40 / Janeiro 2026",  carencia:"",             posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:14, area:"CP",  fornecedor:"SAMSUNG",                              descricao:"JUROS",                           mensalAtual:87292.31,   anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"NEGOCIAÇÃO JUNTAMENTE COM O COMERCIAL / ANTECIPAÇÃO DE ND",           carencia:"",             posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:15, area:"CP",  fornecedor:"SAMSUNG",                              descricao:"JUROS",                           mensalAtual:282754.50,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"NEGOCIAÇÃO JUNTAMENTE COM O COMERCIAL / ANTECIPAÇÃO DE ND",           carencia:"",             posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:16, area:"CP",  fornecedor:"SAMSUNG",                              descricao:"JUROS",                           mensalAtual:673270.62,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"NEGOCIAÇÃO JUNTAMENTE COM O COMERCIAL / ANTECIPAÇÃO DE ND",           carencia:"",             posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:17, area:"CP",  fornecedor:"APLICAÇÕES",                           descricao:"RENTABILIDADE",                   mensalAtual:255287.54,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"jan/26",                                       carencia:"",                                      posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:18, area:"CP",  fornecedor:"APLICAÇÕES",                           descricao:"RENTABILIDADE",                   mensalAtual:154731.08,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"fev/26",                                       carencia:"",                                      posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  { id:19, area:"CP",  fornecedor:"APLICAÇÕES",                           descricao:"RENTABILIDADE",                   mensalAtual:125067.20,  anoAtual:null,       mensalProp:null,    anoProp:null,       vigencia:"mar/26",                                       carencia:"",                                      posicao:"Manter",       argManter:"",                                                                                                                                                                                                            argNao:"",                                                                                                                                                                           obs:"" },
+  // ── MARKETING ───────────────────────────────────────────────────────────────
+  { id:20, area:"MKT", fornecedor:"HUBCHANNEL CONSULTORIA E TECNOLOGIA LTDA", descricao:"APP REVISTA RCELL - ANDROID/IOS",  mensalAtual:870.69,    anoAtual:10448.28,   mensalProp:0,       anoProp:0,          vigencia:"Mensalmente",                                  carencia:"(solicitado o cancelamento em 6/4) - 30 dias",  posicao:"Encerrar",     argManter:"",                                                                                                                                                                                                            argNao:"Baixo uso potencial; formato em desuso; redundante com RCELL ONE, e-mail e WhatsApp; difícil justificar ROI, já existe a revista no site e os acessos diaários sao de xxx",  obs:"" },
+  { id:21, area:"MKT", fornecedor:"ABRADISTI",                            descricao:"MENSALIDADE ASSOCIATIVA ABRADISTI",mensalAtual:4263.00,    anoAtual:51156.00,   mensalProp:0,       anoProp:0,          vigencia:"Mensalmente",                                  carencia:"aviso de 30 dias",                      posicao:"Encerrar",     argManter:"Acesso a networking com indústria; representatividade institucional; insights de mercado",                                                                                                                            argNao:"Alto custo com retorno indireto; difícil mensuração de impacto; possível subutilização",                                                                                     obs:"" },
+  { id:22, area:"MKT", fornecedor:"XCOM COMUNICAÇÃO E MARKETING LTDA",   descricao:"ASSESSORIA DE IMPRENSA RCELL",     mensalAtual:12480.52,   anoAtual:149766.24,  mensalProp:9000,    anoProp:108000,     vigencia:"11/05/2026 (mensalmente)",                     carencia:"aviso com 30 dias sem carência",        posicao:"Encerrar",     argManter:"Fortalece reputação da marca; apoio ao posicionamento institucional; relacionamento com mídia",                                                                                                                        argNao:"Custo elevado; ROI indireto; pode haver otimização de escopo (redução já proposta) | Posiçáo Duran: Verificar a possibilidade de executar serviços de assessoria mediante necessidade.", obs:"" },
+  { id:23, area:"MKT", fornecedor:"SINO PRODUÇÕES LTDA",                  descricao:"SERVIÇOS DE CLIPPING - RCELL",    mensalAtual:2075.00,    anoAtual:24900.00,   mensalProp:2075,    anoProp:24900,      vigencia:"01/07/2026 (rescisão com aviso de 30 dias)",   carencia:"rescisão com aviso de 30 dias",         posicao:"Encerrar",     argManter:"Monitoramento de marca e mercado; suporte à inteligência competitiva",                                                                                                                                                argNao:"Pode haver alternativas mais econômicas; dependente do nível de uso real",                                                                                                   obs:"" },
+  { id:24, area:"MKT", fornecedor:"TYPEFORM",                             descricao:"CRIAÇÃO DE FORMULÁRIO",           mensalAtual:681.12,     anoAtual:8173.44,    mensalProp:0,       anoProp:0,          vigencia:"USD Mensalmente",                              carencia:"Sem carencia",                          posicao:"Encerrar",     argManter:"Plataforma robusta; boa experiência de uso; confiável",                                                                                                                                                               argNao:"Existem alternativas gratuitas ou mais baratas; custo recorrente desnecessário",                                                                                             obs:"" },
+  { id:25, area:"MKT", fornecedor:"CUBO AMARELO SERVIÇOS DE INTERNET LTDA", descricao:"HOSPEDAGEM SITE RCELL",         mensalAtual:99.00,      anoAtual:1188.00,    mensalProp:99,      anoProp:1188,       vigencia:"Mensalmente",                                  carencia:"-",                                     posicao:"Manter",       argManter:"Infraestrutura crítica; baixo custo; garante estabilidade e presença digital",                                                                                                                                        argNao:"Praticamente nenhum; só revisitar se houver alternativa mais eficiente/custo menor",                                                                                         obs:"" },
+  { id:26, area:"MKT", fornecedor:"CUBO AMARELO SERVIÇOS DE INTERNET LTDA", descricao:"HOSPEDAGEM SITE RSMART",        mensalAtual:99.00,      anoAtual:1188.00,    mensalProp:99,      anoProp:1188,       vigencia:"Mensalmente",                                  carencia:"30 dias",                               posicao:"Manter",       argManter:"Infraestrutura essencial para operação da marca; custo baixo",                                                                                                                                                        argNao:"Sem argumento relevante para corte",                                                                                                                                         obs:"" },
+  { id:27, area:"MKT", fornecedor:"GCN ASSOCIADOS MARCAS E PATENTE LTDA", descricao:"SERVIÇOS DE MARCAS E PATENTES DA RCELL", mensalAtual:null, anoAtual:1400.00,  mensalProp:null,    anoProp:1400,       vigencia:"Anualmente (Pago em duas parcelas de R$700)",  carencia:"",                                      posicao:"Manter",       argManter:"Proteção jurídica da marca; custo baixo vs alto risco; segurança institucional",                                                                                                                                      argNao:"Nenhum relevante para corte",                                                                                                                                                obs:"" },
+  { id:28, area:"MKT", fornecedor:"ENVATO",                               descricao:"BANCO DE IMAGENS",                mensalAtual:null,       anoAtual:1045.44,    mensalProp:null,    anoProp:1045.44,    vigencia:"Pago USD em janeiro de 26 (anual)",            carencia:"",                                      posicao:"Manter",       argManter:"Alto ganho de produtividade para o time; custo baixo; amplia qualidade das peças",                                                                                                                                    argNao:"Nenhum relevante; custo marginal",                                                                                                                                           obs:"" },
+  { id:29, area:"MKT", fornecedor:"AHASLIDES",                            descricao:"PLATAFORMA PARA QUIZ E APRESENTAÇÕES", mensalAtual:null,  anoAtual:503.71,     mensalProp:null,    anoProp:503.71,     vigencia:"Pago USD em fevereiro (anual)",                 carencia:"",                                      posicao:"Manter",       argManter:"Apoio a apresentações interativas; diferencial em eventos e treinamentos",                                                                                                                                            argNao:"Nenhum relevante para corte",                                                                                                                                                obs:"" },
+  { id:30, area:"MKT", fornecedor:"INTEGRO MARKETING BRASIL LTDA",        descricao:"INTRANET RCELL - PLATAFORMA RCELL ONE", mensalAtual:5050.04, anoAtual:60600.48, mensalProp:5050.04, anoProp:60600.48, vigencia:"Mensalmente",                                  carencia:"",                                      posicao:"Redirecionar", argManter:"Canal oficial de comunicação interna; essencial para alinhamento, cultura e eficiência operacional [ REDIRECIONAR PARA A BU DE ENDOMARKETING ]",                                                                     argNao:"Nenhum relevante; risco alto de impacto interno caso removido",                                                                                                              obs:"" },
+  { id:31, area:"MKT", fornecedor:"DITO",                                 descricao:"DISPARO DE E-MAIL MKT",           mensalAtual:4840.76,    anoAtual:58089.12,   mensalProp:1190,    anoProp:14280,      vigencia:"14/02 - rescisão com aviso de 60 dias",        carencia:"60 dias a partir do aviso",             posicao:"Substituir",   argManter:"Canal relevante para comunicação com clientes; permite segmentação e automação; já otimizado na proposta",                                                                                                                  argNao:"Custo atual elevado; possível superdimensionamento; dependência da ferramenta",                                                                                              obs:"" },
+];
+const SEED_IDS = new Set(SEED.map(r=>r.id));
 
-      document.getElementById('infoColunas').style.display = 'block';
-      document.getElementById('listaColunas').innerHTML = cols.map(c => '<span class="col-tag">' + c + '</span>').join('');
-      document.getElementById('colunaValorInfo').textContent = colValor
-        ? 'Coluna usada para totais em R$: \"' + colValor + '\".'
-        : 'Nenhuma coluna numérica foi detectada para somar valores.';
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const LS_KEY   = "rcell_user_additions_v1";
+const LS_EDITS = "rcell_seed_edits_v1";
+let userRows=[], seedEdits={}, nextId=100, activeTab="all", deleteId=null;
 
-      const labels = ['A vencer', 'Pagos'];
-      const qtd = [aVencer.length, pagos.length];
-      if (chartOrigem) chartOrigem.destroy();
-      chartOrigem = new Chart(document.getElementById('chartOrigem'), {
-        type: 'pie',
-        data: {
-          labels,
-          datasets: [{ data: qtd, backgroundColor: ['#1e3a5f', '#2d5a3a'] }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }
-        }
-      });
+function load(){
+  try{ const u=localStorage.getItem(LS_KEY); if(u){const p=JSON.parse(u);userRows=p.rows||[];nextId=p.nextId||100;} }catch(e){}
+  try{ const e=localStorage.getItem(LS_EDITS); if(e) seedEdits=JSON.parse(e); }catch(e){}
+}
+function save(){
+  localStorage.setItem(LS_KEY, JSON.stringify({rows:userRows,nextId}));
+  localStorage.setItem(LS_EDITS, JSON.stringify(seedEdits));
+}
+function allRows(){ return [...SEED.map(r=>seedEdits[r.id]?{...r,...seedEdits[r.id]}:r), ...userRows]; }
 
-      let valorPorOrigem = [0, 0];
-      if (colValor) {
-        valorPorOrigem = [
-          aVencer.reduce((s, r) => s + (parseFloat(String(r[colValor]).replace(/\./g, '').replace(',', '.')) || 0), 0),
-          pagos.reduce((s, r) => s + (parseFloat(String(r[colValor]).replace(/\./g, '').replace(',', '.')) || 0), 0)
-        ];
-      }
-      document.getElementById('tituloChartValor').textContent = colValor
-        ? 'Valor em R$ por origem (coluna \"' + colValor + '\")'
-        : 'Valor por origem (nenhuma coluna numérica detectada)';
-      if (chartValor) chartValor.destroy();
-      chartValor = new Chart(document.getElementById('chartValor'), {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'R$', data: valorPorOrigem, backgroundColor: ['#1e3a5f', '#2d5a3a'] }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } }
-        }
-      });
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const fmtBRL   = v => v==null?"—":new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2}).format(v);
+const fmtShort = v => { if(v==null)return"—"; const a=Math.abs(v); if(a>=1e9)return"R$ "+(v/1e9).toFixed(2).replace(".",",")+"B"; if(a>=1e6)return"R$ "+(v/1e6).toFixed(2).replace(".",",")+"M"; if(a>=1e3)return"R$ "+(v/1e3).toFixed(0)+"K"; return fmtBRL(v); };
+const fmtPct   = v => v==null?"—":(v*100).toFixed(1).replace(".",",")+"%";
+const num      = s => { const v=parseFloat(String(s||"").replace(",",".")); return(isNaN(v)||s===""||s==null)?null:v; };
+const getAno   = r => r.anoAtual  ??(r.mensalAtual  !=null?r.mensalAtual *12:null);
+const getProp  = r => r.anoProp   ??(r.mensalProp   !=null?r.mensalProp  *12:null);
+const getEco   = r => { const a=getAno(r),p=getProp(r); return(a!=null&&p!=null)?a-p:null; };
+const getRed   = r => { const a=getAno(r),e=getEco(r);  return(a!=null&&a>0&&e!=null)?e/a:null; };
+const isDark   = () => (document.documentElement.getAttribute("data-theme")||"dark")==="dark";
+const BADGE_C  = {Avaliar:"b-avaliar",Manter:"b-manter",Encerrar:"b-encerrar",Substituir:"b-substituir",Redirecionar:"b-redirecionar"};
+const PIE_CLR  = {Avaliar:"#3b82f6",Manter:"#22c55e",Encerrar:"#ef4444",Substituir:"#f59e0b",Redirecionar:"#a855f7"};
+const badge    = p => `<span class="badge ${BADGE_C[p]||''}">${p}</span>`;
+const areaTag  = a => `<span style="font-size:.67rem;color:var(--muted2);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:2px 7px">${a==="CP"?"C.Pagar":"MKT"}</span>`;
 
-      if (chartTopCat) chartTopCat.destroy();
-      const cardTop = document.getElementById('cardTopCategoria');
-      if (colValor && colTexto) {
-        const agg = {};
-        mergedData.forEach(r => {
-          const cat = String(r[colTexto] || '(vazio)').trim();
-          if (!agg[cat]) agg[cat] = 0;
-          agg[cat] += parseVal(r);
-        });
-        const topCats = Object.entries(agg).sort((a, b) => b[1] - a[1]).slice(0, 12);
-        document.getElementById('tituloTopCategoria').textContent = 'Maiores somas em R$ por \"' + colTexto + '\" (top 12)';
-        cardTop.style.display = 'block';
-        chartTopCat = new Chart(document.getElementById('chartTopCategoria'), {
-          type: 'bar',
-          data: {
-            labels: topCats.map(([c]) => c.length > 25 ? c.slice(0, 22) + '...' : c),
-            datasets: [{ label: 'R$', data: topCats.map(([, v]) => v), backgroundColor: '#1e3a5f' }]
-          },
-          options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { x: { beginAtZero: true } },
-            plugins: { legend: { display: false } }
-          }
-        });
-      } else {
-        cardTop.style.display = 'none';
-      }
+// ── FILTER ─────────────────────────────────────────────────────────────────────
+function filtered(){
+  const q=(document.getElementById("search").value||"").trim().toLowerCase();
+  const fp=document.getElementById("filterPos").value;
+  return allRows().filter(r=>{
+    if(activeTab!=="all"&&r.area!==activeTab)return false;
+    if(fp&&r.posicao!==fp)return false;
+    if(q&&!(r.fornecedor.toLowerCase().includes(q)||r.descricao.toLowerCase().includes(q)))return false;
+    return true;
+  });
+}
 
-      document.getElementById('thead').innerHTML = '<tr>' + cols.map(c => '<th>' + c + '</th>').join('') + '</tr>';
-      document.getElementById('tbody').innerHTML = mergedData.map(row =>
-        '<tr>' + cols.map(c => '<td>' + (row[c] ?? '') + '</td>').join('') + '</tr>'
-      ).join('');
+// ── KPIs ───────────────────────────────────────────────────────────────────────
+function renderKPIs(){
+  const rows=filtered(); let tA=0,tP=0,tE=0,nE=0;
+  rows.forEach(r=>{const a=getAno(r);if(a)tA+=a;const p=getProp(r);if(p!=null)tP+=p;const e=getEco(r);if(e!=null&&e>0){tE+=e;nE++;}});
+  const red=tA>0?tE/tA:0; const byP={};
+  rows.forEach(r=>byP[r.posicao]=(byP[r.posicao]||0)+1);
+  document.getElementById("kpis").innerHTML=`
+    <div class="kpi"><div class="kpi-lbl">Custo Anual Atual</div><div class="kpi-val c-blue">${fmtShort(tA)}</div><div class="kpi-sub">${rows.length} contratos filtrados</div></div>
+    <div class="kpi"><div class="kpi-lbl">Custo Anual Proposto</div><div class="kpi-val">${fmtShort(tP)}</div><div class="kpi-sub">Novo modelo com reduções</div></div>
+    <div class="kpi"><div class="kpi-lbl">Economia Projetada</div><div class="kpi-val c-green">${fmtShort(tE)}</div><div class="kpi-sub">${nE} contrato(s) com redução</div></div>
+    <div class="kpi"><div class="kpi-lbl">Redução Média</div><div class="kpi-val c-yellow">${fmtPct(red)}</div><div class="kpi-sub">Sobre custo anual total</div></div>
+    <div class="kpi"><div class="kpi-lbl">Posições</div><div class="kpi-val c-purple">${rows.length}</div><div class="kpi-sub">${byP["Encerrar"]||0} encerrar · ${byP["Avaliar"]||0} avaliar · ${byP["Manter"]||0} manter</div></div>`;
+}
 
-      document.getElementById('btnExportar').onclick = () => {
-        const BOM = '\uFEFF';
-        const header = cols.join(';');
-        const rows = mergedData.map(r => cols.map(c => (r[c] ?? '')).join(';')).join('\r\n');
-        const blob = new Blob([BOM + header + '\r\n' + rows], { type: 'text/csv;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'dados_unificados.csv';
-        a.click();
-        URL.revokeObjectURL(a.href);
-      };
-    }
-  </script>
+// ── CHARTS ─────────────────────────────────────────────────────────────────────
+function renderCharts(){
+  const rows=filtered();
+  const tick=isDark()?"#64748b":"#94a3b8", grid=isDark()?"#1e2133":"#e2e8f0";
+  // Pie
+  const pos={};rows.forEach(r=>pos[r.posicao]=(pos[r.posicao]||0)+1);
+  const pL=Object.keys(pos),pV=pL.map(l=>pos[l]),pC=pL.map(l=>PIE_CLR[l]||"#888");
+  if(pieChart)pieChart.destroy();
+  pieChart=new Chart(document.getElementById("pieChart"),{type:"doughnut",data:{labels:pL,datasets:[{data:pV,backgroundColor:pC,borderWidth:2,borderColor:isDark()?"#0e1117":"#fff"}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  document.getElementById("pieLegend").innerHTML=pL.map((l,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${pC[i]}"></div>${l}: <b>${pV[i]}</b></div>`).join("");
+  // Bar
+  const top=[ ...rows].filter(r=>getAno(r)!=null).sort((a,b)=>(getAno(b)||0)-(getAno(a)||0)).slice(0,12);
+  const bL=top.map(r=>r.fornecedor.length>13?r.fornecedor.slice(0,13)+"…":r.fornecedor);
+  const bA=top.map(r=>getAno(r)||0),bP=top.map(r=>{const p=getProp(r);return p!=null?p:(getAno(r)||0);});
+  if(barChart)barChart.destroy();
+  barChart=new Chart(document.getElementById("barChart"),{type:"bar",data:{labels:bL,datasets:[{label:"Atual",data:bA,backgroundColor:"#2563eb",borderRadius:4},{label:"Proposto",data:bP,backgroundColor:isDark()?"#22c55e":"#16a34a",borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tick,boxWidth:10,font:{size:11}}}},scales:{x:{ticks:{color:tick,font:{size:10}},grid:{color:grid}},y:{ticks:{color:tick,callback:v=>fmtShort(v)},grid:{color:grid}}}}});
+}
+
+// ── TABLE ──────────────────────────────────────────────────────────────────────
+function renderTable(){
+  const rows=filtered(); const isAdmin=SESSION&&SESSION.role==="admin";
+  document.getElementById("rc").textContent=rows.length+" registros";
+  const tbody=document.getElementById("tbody");
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="12"><div class="empty-state">Nenhum registro encontrado.</div></td></tr>`;return;}
+  tbody.innerHTML=rows.map(r=>{
+    const a=getAno(r),p=getProp(r),e=getEco(r),red=getRed(r);
+    const ecoH=e!=null&&e>0?`<span class="c-eco">${fmtBRL(e)}</span>`:`<span class="c-zero">—</span>`;
+    const redH=red!=null&&red>0?`<span class="c-eco">${fmtPct(red)}</span>`:(red!=null&&red<0?`<span style="color:var(--red)">${fmtPct(red)}</span>`:`<span class="c-zero">—</span>`);
+    const isOrig=SEED_IDS.has(r.id);
+    const acts=isAdmin?`<td style="white-space:nowrap"><button class="btn-icon" title="Editar" onclick="openModal(${r.id})">✏️</button>${isOrig?`<button class="btn-icon" disabled title="Registro original">🔒</button>`:`<button class="btn-icon" title="Excluir" onclick="openConfirm(${r.id})">🗑</button>`}</td>`:`<td></td>`;
+    const newTag=isOrig?"":`<span class="origin-tag">novo</span> `;
+    return`<tr><td>${areaTag(r.area)}</td><td>${newTag}<strong>${r.fornecedor}</strong></td><td style="color:var(--muted2);max-width:185px">${r.descricao}${r.obs?`<br><span class="small">${r.obs}</span>`:""}</td><td class="num">${r.mensalAtual!=null?fmtBRL(r.mensalAtual):"—"}</td><td class="num">${a!=null?fmtBRL(a):"—"}</td><td class="num">${p!=null?fmtBRL(p):"—"}</td><td class="num">${ecoH}</td><td class="num">${redH}</td><td style="font-size:.75rem;color:var(--muted2)">${r.vigencia||"—"}</td><td style="font-size:.75rem;color:var(--muted2)">${r.carencia||"—"}</td><td>${badge(r.posicao)}</td>${acts}</tr>`;
+  }).join("");
+}
+
+function render(){ renderKPIs(); try{ renderCharts(); }catch(e){ console.warn("charts:",e); } renderTable(); }
+function setTab(el){ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); el.classList.add("active"); activeTab=el.dataset.tab; render(); }
+
+// ── MODAL ──────────────────────────────────────────────────────────────────────
+function openModal(id){
+  if(!SESSION||SESSION.role!=="admin")return;
+  document.getElementById("modal-title").textContent=id?"Editar Fornecedor":"Novo Fornecedor";
+  document.getElementById("f-id").value=id||"";
+  if(id){
+    const r=allRows().find(x=>x.id===id); if(!r)return;
+    document.getElementById("f-area").value=r.area;
+    document.getElementById("f-forn").value=r.fornecedor;
+    document.getElementById("f-desc").value=r.descricao;
+    document.getElementById("f-mensal").value=r.mensalAtual??'';
+    document.getElementById("f-ano").value=r.anoAtual??'';
+    document.getElementById("f-mensalprop").value=r.mensalProp??'';
+    document.getElementById("f-anoprop").value=r.anoProp??'';
+    document.getElementById("f-vig").value=r.vigencia||'';
+    document.getElementById("f-car").value=r.carencia||'';
+    document.getElementById("f-pos").value=r.posicao;
+    document.getElementById("f-argm").value=r.argManter||'';
+    document.getElementById("f-argn").value=r.argNao||'';
+    document.getElementById("f-obs").value=r.obs||'';
+  } else {
+    ["f-forn","f-desc","f-mensal","f-ano","f-mensalprop","f-anoprop","f-vig","f-car","f-argm","f-argn","f-obs"].forEach(i=>document.getElementById(i).value="");
+    document.getElementById("f-area").value=activeTab==="CP"?"CP":"MKT";
+    document.getElementById("f-pos").value="Avaliar";
+  }
+  document.getElementById("overlay").classList.add("open");
+}
+function closeModal(){ document.getElementById("overlay").classList.remove("open"); }
+
+function saveRow(){
+  const id=document.getElementById("f-id").value;
+  const f=document.getElementById("f-forn").value.trim(), d=document.getElementById("f-desc").value.trim();
+  if(!f||!d){alert("Fornecedor e Descrição são obrigatórios.");return;}
+  const row={area:document.getElementById("f-area").value,fornecedor:f,descricao:d,mensalAtual:num(document.getElementById("f-mensal").value),anoAtual:num(document.getElementById("f-ano").value),mensalProp:num(document.getElementById("f-mensalprop").value),anoProp:num(document.getElementById("f-anoprop").value),vigencia:document.getElementById("f-vig").value.trim(),carencia:document.getElementById("f-car").value.trim(),posicao:document.getElementById("f-pos").value,argManter:document.getElementById("f-argm").value.trim(),argNao:document.getElementById("f-argn").value.trim(),obs:document.getElementById("f-obs").value.trim()};
+  if(id){
+    const rid=parseInt(id);
+    if(SEED_IDS.has(rid)) seedEdits[rid]=row;
+    else{ const idx=userRows.findIndex(x=>x.id===rid); if(idx>=0)userRows[idx]={...userRows[idx],...row}; }
+    toast("Alterações salvas.");
+  } else { userRows.push({...row,id:nextId++}); toast("Fornecedor adicionado."); }
+  save(); closeModal(); render();
+}
+
+// ── DELETE ─────────────────────────────────────────────────────────────────────
+function openConfirm(id){deleteId=id;const r=allRows().find(x=>x.id===id);document.getElementById("confirmName").textContent=r?r.fornecedor:"";document.getElementById("confirmOverlay").classList.add("open");}
+function closeConfirm(){document.getElementById("confirmOverlay").classList.remove("open");deleteId=null;}
+function confirmDelete(){if(deleteId!=null&&!SEED_IDS.has(deleteId)){userRows=userRows.filter(x=>x.id!==deleteId);save();toast("Fornecedor excluído.");render();}closeConfirm();}
+
+// ── EXPORT ─────────────────────────────────────────────────────────────────────
+function exportCSV(){
+  const rows=filtered();
+  const H=["Origem","Área","Fornecedor","Descrição","Mensal Atual","Anual Atual","Mensal Prop.","Anual Prop.","Economia","Redução %","Vigência","Carência","Posição","Arg. Manter","Arg. Não Manter","Obs."];
+  const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const lines=[H.map(esc).join(";")];
+  rows.forEach(r=>{const e=getEco(r),red=getRed(r);lines.push([SEED_IDS.has(r.id)?"Original":"Novo",r.area==="CP"?"Contas a Pagar":"Marketing",r.fornecedor,r.descricao,r.mensalAtual??'',getAno(r)??'',r.mensalProp??'',getProp(r)??'',e??'',red!=null?(red*100).toFixed(2):'',r.vigencia,r.carencia,r.posicao,r.argManter,r.argNao,r.obs].map(esc).join(";"));});
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+lines.join("\n")],{type:"text/csv;charset=utf-8"}));a.download="rcell_custos.csv";a.click();toast("CSV exportado.");
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────────
+function toast(msg,dur=2500){const el=document.getElementById("toast");el.textContent="✓ "+msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),dur);}
+
+// ── EVENTS ─────────────────────────────────────────────────────────────────────
+document.getElementById("overlay").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal();});
+document.getElementById("confirmOverlay").addEventListener("click",e=>{if(e.target===e.currentTarget)closeConfirm();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal();closeConfirm();}});
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+(function(){
+  const saved=sessionStorage.getItem("rcell_session");
+  if(saved){try{SESSION=JSON.parse(saved);startApp();return;}catch(e){}}
+  document.getElementById("login-screen").style.display="flex";
+})();
+</script>
 </body>
 </html>
